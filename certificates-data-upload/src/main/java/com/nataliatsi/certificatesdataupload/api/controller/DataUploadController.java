@@ -1,6 +1,12 @@
 package com.nataliatsi.certificatesdataupload.api.controller;
 
 import com.nataliatsi.certificatesdataupload.api.core.service.UploadProcessingService;
+import com.nataliatsi.certificatesdataupload.api.dto.SuccessResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +24,29 @@ public class DataUploadController {
         this.uploadService = uploadService;
     }
 
+    @Operation(
+            summary = "Upload participant data file",
+            description = "Accepts a participant data file and its format for asynchronous processing."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "File accepted for processing"),
+            @ApiResponse(responseCode = "400", description = "Invalid request or missing parameters"),
+            @ApiResponse(responseCode = "415", description = "Unsupported media type"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error"),
+    })
     @PostMapping("/participants")
-    public ResponseEntity<Void> uploadParticipantData(@RequestParam("file") MultipartFile file, @RequestParam("format") String format) {
-        uploadService.processUpload(file, format);
-        return ResponseEntity.accepted().build();
-    }
+    public ResponseEntity<SuccessResponseDTO> uploadParticipantData(
+            @Parameter(description = "File containing participant data", required = true)
+            @RequestParam("file") MultipartFile file,
 
+            @Parameter(description = "File format (e.g., csv, json", required = true)
+            @RequestParam("format") String format
+    ) {
+        uploadService.processUpload(file, format);
+        SuccessResponseDTO response = new SuccessResponseDTO(
+                HttpStatus.ACCEPTED.value(),
+                "Upload received and is being processed."
+        );
+        return ResponseEntity.accepted().body(response);
+    }
 }
