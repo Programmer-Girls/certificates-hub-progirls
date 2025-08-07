@@ -1,6 +1,6 @@
 package com.nataliatsi.certificatesdataupload.api.controller;
 
-import com.nataliatsi.certificatesdataupload.api.core.service.ParticipantMappingService;
+import com.nataliatsi.certificatesdataupload.api.core.service.UploadProcessingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,15 +12,15 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/uploads")
 public class DataUploadController {
 
-    private final ParticipantMappingService uploadService;
+    private final UploadProcessingService uploadService;
 
-    public DataUploadController(ParticipantMappingService uploadService) {
+    public DataUploadController(UploadProcessingService uploadService) {
         this.uploadService = uploadService;
     }
 
     @PostMapping("/participants")
     public ResponseEntity<Void> uploadParticipantData(@RequestParam("file") MultipartFile file, @RequestParam("format") String format) {
-        uploadService.processFile(file, format);
+        uploadService.processUpload(file, format);
         return ResponseEntity.accepted().build();
     }
 
