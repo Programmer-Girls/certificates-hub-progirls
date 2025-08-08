@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Tanjiro Kamado",
+    "email": "tanjiro.kamado@demoncorp.org",
+    "event": {
+      "name": "Técnicas de Respiração: Estilo da Água",
+      "description": "Treinamento intensivo sobre as formas e aplicações do Estilo da Água na luta contra Onis.",
+      "workload": 8,
+      "speaker": "Urokodaki Sakonji",
+      "remote": true
+    }
+  },
+  {
+    "name": "Nezuko Kamado",
+    "email": "nezuko.kamado@demoncorp.org",
+    "event": {
+      "name": "Controle de Sangue Demoníaco",
+      "description": "Estudo guiado sobre técnicas de controle e resistência ao impulso demoníaco.",
+      "workload": 20,
+      "speaker": "Tamayo",
+      "remote": false
+    }
+  },
+  {
+    "name": "Zenitsu Agatsuma",
+    "email": "zenitsu.agatsuma@demoncorp.org",
+    "event": {
+      "name": "Estilo do Trovão: Primeira Forma",
+      "description": "Curso prático focado na execução perfeita da primeira forma do Estilo do Trovão.",
+      "workload": 16,
+      "speaker": "Jigoro Kuwajima",
+      "remote": true
+    }
+  }
+]
