@@ -1,5 +1,7 @@
 package com.nataliatsi.certificatessender.api.service;
 
+import com.nataliatsi.certificatessender.api.dto.MessageDTO;
+import com.nataliatsi.certificatessender.api.util.ValidityDateHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,32 +16,32 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
-
     public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
     }
 
-    public void enviarCertificado(String destinatario, String nomeParticipante, String assunto, String link) {
+    public void sendCertificate(MessageDTO messageDTO) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
             Context context = new Context();
-            context.setVariable("nome", nomeParticipante);
-            context.setVariable("linkCertificado", link);
-            String html = templateEngine.process("certificado-email", context);
+            context.setVariable("name", messageDTO.name());
+            context.setVariable("certificateLink", messageDTO.certificateLink());
+            context.setVariable("validityDate", ValidityDateHelper.calculateValidity(5));
+            String html = templateEngine.process("certificate-email", context);
 
-            helper.setTo(destinatario);
-            helper.setSubject(assunto);
+            helper.setTo(messageDTO.email());
+            helper.setSubject(messageDTO.subject());
             helper.setText(html, true);
-            helper.setFrom("no-reply@certificados.com");
+            helper.setFrom("no-reply@certificates.com");
 
             mailSender.send(mimeMessage);
-            System.out.println("Email enviado com sucesso para " + destinatario);
+            System.out.println("Email successfully sent to " + messageDTO.email());
 
         } catch (MessagingException e) {
-            System.out.println("Erro ao enviar certificado: " + e.getMessage());
+            System.out.println("Error while sending certificate: " + e.getMessage());
         }
     }
 }

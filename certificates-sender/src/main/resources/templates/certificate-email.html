@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Certificado</title>
-    <!-- Importando a fonte Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
     <style>
         body {
@@ -27,16 +26,21 @@
     </style>
 </head>
 <body>
-<h1 style="font-size: 1.5rem; font-weight: bold;">Olá, [[${nome}]]! 👋</h1>
+<h1 style="font-size: 1.5rem; font-weight: bold;">Olá, [[${name}]]! 👋</h1>
 <p style="margin-top: 1rem; color: #4b5563;">
     Seu certificado está pronto! 🎓
 </p>
 <p style="margin-top: 0.5rem; color: #4b5563;">
-    Agradecemos pela sua participação. Você pode fazer o download clicando no botão abaixo:
+    Obrigado pela sua participação. Você pode baixá-lo clicando no botão abaixo:
 </p>
-<a href="[[${linkCertificado}]]">
+<a href="[[${certificateLink}]]">
     Baixar Certificado
 </a>
+
+<p style="margin-top: 1rem; font-size: 0.875rem; color: #ef4444;">
+    ⚠ Este certificado estará disponível até: <strong>[[${validityDate}]]</strong>
+</p>
+
 <p style="margin-top: 2rem; font-size: 0.875rem; color: #9ca3af;">
     Este é um e-mail automático. Por favor, não responda.
 </p>
