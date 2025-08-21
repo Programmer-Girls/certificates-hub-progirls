@@ -1,30 +1,54 @@
 package com.nataliatsi.certificatesdataupload.api.core.strategy;
 
+import com.nataliatsi.certificatesdataupload.api.dto.EventDTO;
+import com.nataliatsi.certificatesdataupload.api.dto.ParticipantDTO;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component("csv")
-public class CsvFileProcessor {
-//    @Override
-//    public List<ParticipantRequestDTO> processFile(MultipartFile file) throws Exception {
-//        List<ParticipantRequestDTO> participants = new ArrayList<>();
-//
-//        try(CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
-//            String[] line;
-//            reader.skip(1);
-//            while ((line = reader.readNext()) != null) {
-//                String name = line[0];
-//                String email = line[1];
-//                String eventName = line[2];
-//                String eventDate = line[3];
-//                String speaker = line[4];
-//                String workload = line[5];
-//                boolean remote = Boolean.parseBoolean(line[6]);
-//
-//                EventDTO event = new EventDTO(eventName, eventDate, speaker, workload, remote);
-//                ParticipantRequestDTO participant = new ParticipantRequestDTO(name, email, event);
-//                participants.add(participant);
-//            }
-//        }
-//        return participants;
-//    }
+public class CsvFileProcessor implements FileProcessorStrategy{
+    
+    @Override
+    public List<ParticipantDTO> processFile(MultipartFile file) throws Exception {
+        List<ParticipantDTO> participants = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+
+            String headerLine = reader.readLine(); 
+            if (headerLine == null) {
+                throw new IllegalArgumentException("CSV está vazio");
+            }
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(",");
+
+                String name = columns[0].trim();
+                String email = columns[1].trim();
+                EventDTO event = getEventDTO(columns);
+                participants.add(new ParticipantDTO(name, email, event));
+            }
+        }
+
+        return participants;
+    }
+
+    private static EventDTO getEventDTO(String[] columns) {
+        String eventName = columns[2].trim();
+        String eventDescription = columns[3].trim();
+        int workload = Integer.parseInt(columns[4].trim());
+        String speaker = columns[5].trim();
+        boolean remote = columns[6].trim().equalsIgnoreCase("sim") || columns[6].trim().equalsIgnoreCase("true");
+        LocalDate date = LocalDate.parse(columns[7].trim());
+
+        return new EventDTO(eventName, eventDescription, workload, speaker, remote, date);
+    }
 }
