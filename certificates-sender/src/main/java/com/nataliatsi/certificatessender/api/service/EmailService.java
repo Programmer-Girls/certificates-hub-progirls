@@ -27,18 +27,18 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
             Context context = new Context();
-            context.setVariable("name", messageDTO.name());
+            context.setVariable("name", messageDTO.participantName());
             context.setVariable("certificateLink", messageDTO.certificateLink());
             context.setVariable("validityDate", ValidityDateHelper.calculateValidity(5));
             String html = templateEngine.process("certificate-email", context);
 
-            helper.setTo(messageDTO.email());
-            helper.setSubject(messageDTO.subject());
+            helper.setTo(messageDTO.participantEmail());
+            helper.setSubject("Your certificate is ready!");
             helper.setText(html, true);
             helper.setFrom("no-reply@certificates.com");
 
             mailSender.send(mimeMessage);
-            System.out.println("Email successfully sent to " + messageDTO.email());
+            System.out.println("Email successfully sent to " + messageDTO.participantEmail());
 
         } catch (MessagingException e) {
             System.out.println("Error while sending certificate: " + e.getMessage());
