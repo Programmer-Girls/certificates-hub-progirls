@@ -10,10 +10,10 @@ public class Publisher {
 
     private final RabbitTemplate rabbitTemplate;
 
-    @Value("${app.rabbitmq.exchange}")
+    @Value("${app.rabbitmq.out.exchange}")
     private String exchange;
 
-    @Value("${app.rabbitmq.routing-key}")
+    @Value("${app.rabbitmq.out.routing-key}")
     private String certificateRoutingKey;
 
     public Publisher(RabbitTemplate rabbitTemplate) {
@@ -23,5 +23,4 @@ public class Publisher {
     public void publish(CertificateMessageDTO message) {
         rabbitTemplate.convertAndSend(exchange, certificateRoutingKey, message);
     }
-
 }
