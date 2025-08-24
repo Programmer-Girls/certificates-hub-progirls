@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/JUnit5-Test-4CAF50?style=flat&logo=junit5&logoColor=white">
   <img src="https://img.shields.io/badge/Maven-Build-4CAF50?style=flat&logo=apache-maven&logoColor=white">
 </p>
+
 ---
 
 ## Table of Contents
@@ -46,6 +47,15 @@ This project requires the following dependencies:
 - **Build Tool:** Maven
 - **Queue Broker:** RabbitMQ
 - **Email Service:** SMTP or any supported email provider
+
+> ⚠️ Before running the service, make sure to configure your SMTP server by setting the following variables in `application.properties` or environment variables:
+>
+> ```properties
+> spring.mail.host=your-smtp-host
+> spring.mail.port=587
+> spring.mail.username=your-username
+> spring.mail.password=your-password
+> ```
 
 ---
 
@@ -95,7 +105,7 @@ certificates-hub-sender uses the JUnit 5 test framework. Run the test suite with
 {
   "participantName": "Tanjiro Kamado",
   "participantEmail": "tanjiro.kamado@demoncorp.org",
-  "certificateLink": "certificates\\Tanjiro_Kamado_certificate.pdf"
+  "certificateLink": "certificates/Tanjiro_Kamado_certificate.pdf"
 }
 ```
 
