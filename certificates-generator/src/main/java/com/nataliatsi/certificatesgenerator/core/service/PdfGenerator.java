@@ -35,7 +35,7 @@ public class PdfGenerator {
 
         File directory = new File("certificates");
         if (!directory.exists()) {
-            directory.mkdirs()
+            directory.mkdirs();
         }
         return outputPath;
     }

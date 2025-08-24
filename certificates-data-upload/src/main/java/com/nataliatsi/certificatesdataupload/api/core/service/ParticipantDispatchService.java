@@ -26,8 +26,6 @@ public class ParticipantDispatchService {
     }
 
     public void sendAll(List<ParticipantDTO> participants) {
-        for (ParticipantDTO p : participants) {
-            sendToGenerationQueue(p);
-        }
+        participants.forEach(this::sendToGenerationQueue);
     }
 }
