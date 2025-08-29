@@ -110,8 +110,6 @@ public class ParticipantMappingServiceTest {
         ParticipantDTO first = participants.get(0);
         assertEquals("Tanjiro Kamado", first.name());
         assertEquals("tanjiro.kamado@demoncorp.org", first.email());
-        assertNotNull(first.event());
-        assertEquals("Técnicas de Respiração: Estilo da Água", first.event().name());
     }
 
     @Test

@@ -1,94 +1,97 @@
 <h1 align="center">Certificates Hub: Data Upload</h1>
 
-<p align="center"><em>Messaging microservice for asynchronous participant data delivery</em></p>
+<p align="center"><em>Microsserviço responsável pelo envio assíncrono de dados de participantes</em></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-In%20Development-2496ED?style=flat">
-  <img src="https://img.shields.io/badge/Java-17-2496ED?style=flat&logo=java&logoColor=white">
-  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-2496ED?style=flat&logo=spring-boot&logoColor=white">
-  <img src="https://img.shields.io/badge/RabbitMQ-Queue-2496ED?style=flat&logo=rabbitmq&logoColor=white">
-  <img src="https://img.shields.io/badge/REST%20API-Design-2496ED?style=flat&logo=OpenAPI-Initiative&logoColor=white">
-  <img src="https://img.shields.io/badge/Swagger-UI-2496ED?style=flat&logo=swagger&logoColor=white">
-  <img src="https://img.shields.io/badge/JUnit5-Test-2496ED?style=flat&logo=junit5&logoColor=white">
-  <img src="https://img.shields.io/badge/Maven-Build-2496ED?style=flat&logo=apache-maven&logoColor=white">
+  <img src="https://img.shields.io/badge/Status-Concluído-9b59b6?style=flat">
+  <img src="https://img.shields.io/badge/Java-17-9b59b6?style=flat&logo=java&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-9b59b6?style=flat&logo=spring-boot&logoColor=white">
+  <img src="https://img.shields.io/badge/RabbitMQ-Fila-9b59b6?style=flat&logo=rabbitmq&logoColor=white">
+  <img src="https://img.shields.io/badge/REST%20API-9b59b6?style=flat&logo=OpenAPI-Initiative&logoColor=white">
+  <img src="https://img.shields.io/badge/Swagger-UI-9b59b6?style=flat&logo=swagger&logoColor=white">
+  <img src="https://img.shields.io/badge/JUnit5-Testes-9b59b6?style=flat&logo=junit5&logoColor=white">
+  <img src="https://img.shields.io/badge/Maven-Build-9b59b6?style=flat&logo=apache-maven&logoColor=white">
 </p>
 
 ---
 
-## Table of Contents
+## Sumário
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [Testing](#testing)
-- [Endpoint](#endpoint)
-
----
-
-## Overview
-
-This microservice is responsible for:
-
-1. Receiving a participant file via HTTP `POST /upload/participants` endpoint.
-2. Detecting the mapping strategy based on the provided format (`csv`, `json`, etc.).
-3. Mapping the file content to internal DTOs.
-4. Dispatching the mapped data to a RabbitMQ queue for asynchronous processing.
-
-It is one of the microservices in the **Certificate Hub** ecosystem.
+* [Visão Geral](#visão-geral)
+* [Primeiros Passos](#primeiros-passos)
+  * [Pré-requisitos](#pré-requisitos)
+  * [Instalação](#instalação)
+  * [Uso](#uso)
+  * [Testes](#testes)
+* [Endpoints](#endpoints)
 
 ---
 
-## Getting Started
+## Visão Geral
 
-### Prerequisites
+Este microsserviço é responsável por:
 
-This project requires the following dependencies:
+1. Receber um arquivo de participantes via endpoint HTTP `POST /api/upload/participants`.
+2. Detectar a estratégia de mapeamento com base no formato do arquivo (`csv`, `json`, etc.).
+3. Mapear o conteúdo do arquivo para DTOs internos.
+4. Enviar os dados mapeados para uma fila RabbitMQ para processamento assíncrono.
 
-- **Programming Language:** Java 17
-- **Build Tool:** Maven
-- **Queue Broker:** RabbitMQ
+Faz parte do ecossistema **Certificates Hub**.
 
 ---
 
-### Installation
+## Primeiros Passos
 
-Build `certificates-hub-data-upload` from the source and install dependencies:
+### Pré-requisitos
 
-Clone the repository:
+Este projeto requer as seguintes dependências:
+
+* **Java 17**
+* **Maven**
+* **RabbitMQ**
+
+---
+
+### Instalação
+
+Clone o repositório:
 
 ```bash
 ❯ git clone https://github.com/nataliatsi/certificates-hub
 ```
 
-Navigate to the project directory:
+Acesse a pasta do projeto:
 
 ```bash
 ❯ cd certificates-data-upload
 ```
 
-Install the dependencies:
+Instale as dependências:
 
 ```bash
 ❯ ./mvnw clean install
 ```
 
-### Usage
+---
 
-Run the project with:
+### Uso
+
+Execute o projeto com:
 
 ```bash
 ❯ ./mvnw spring-boot:run
 ```
 
-Then access:
+Depois acesse:
 
-`http://localhost:8081/swagger-ui.html` → Swagger UI
+`http://localhost:8081/swagger-ui.html` → **Swagger UI**
 
-### Testing
+---
 
-certificates-hub-data-upload uses the JUnit 5 test framework. Run the test suite with:
+### Testes
+
+O `certificates-hub-data-upload` utiliza **JUnit 5**.
+Rode a suíte de testes com:
 
 ```bash
 ❯ ./mvnw test
@@ -98,26 +101,25 @@ certificates-hub-data-upload uses the JUnit 5 test framework. Run the test suite
 
 ## Endpoints
 
-| Method | Route                  | Description                                                                                |
-|--------|------------------------|--------------------------------------------------------------------------------------------|
-| POST   | `/upload/participants` | Receives a file and its format type, maps the data accordingly, and sends it to the queue. |
+| Método | Rota                   | Descrição                                                                              |
+| ------ | ---------------------- | -------------------------------------------------------------------------------------- |
+| POST   | `/api/upload/participants` | Recebe um arquivo e seu tipo de formato, mapeia os dados e envia para a fila RabbitMQ. |
 
-
-#### Request
+### Requisição
 
 * **Content-Type**: `multipart/form-data`
-* **Parameters**:
+* **Parâmetros**:
 
-    * `file`: the file to be processed
-    * `type`: format of the file (e.g., `"csv"`, `"json"`)
+  * `file`: arquivo a ser processado
+  * `type`: formato do arquivo (ex.: `"csv"`, `"json"`)
 
-#### Response
+### Resposta
 
 ```json
 {
   "timestamp": "2025-08-07T15:28:50.5926834",
   "status": 202,
-  "message": "Upload received and is being processed."
+  "message": "Upload recebido e está sendo processado."
 }
 ```
 
@@ -125,6 +127,6 @@ certificates-hub-data-upload uses the JUnit 5 test framework. Run the test suite
 
 <div align="center">
 
-[↑ **Back to top**](#certificates-hub-data-upload)
+[↑ **Voltar ao topo** 🟪](#-certificates-hub-data-upload)
 
 </div>

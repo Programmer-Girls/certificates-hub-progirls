@@ -1,6 +1,9 @@
 package com.nataliatsi.certificatesgenerator.infrastructure.config;
 
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -11,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    // Input (ms1 → ms2)
     @Value("${app.rabbitmq.exchange}")
     private String inputExchangeName;
 
@@ -20,13 +22,6 @@ public class RabbitMQConfig {
 
     @Value("${app.rabbitmq.queue}")
     private String inputQueueName;
-
-    // Output (ms2 → ms3)
-    @Value("${app.rabbitmq.out.exchange}")
-    private String outputExchangeName;
-
-    @Value("${app.rabbitmq.out.routing-key}")
-    private String outputRoutingKey;
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
@@ -41,7 +36,6 @@ public class RabbitMQConfig {
         return template;
     }
 
-    // Input config
     @Bean
     public DirectExchange inputExchange() {
         return new DirectExchange(inputExchangeName, true, false);
@@ -55,12 +49,6 @@ public class RabbitMQConfig {
     @Bean
     public Binding inputBinding() {
         return BindingBuilder.bind(inputQueue()).to(inputExchange()).with(inputRoutingKey);
-    }
-
-    // Output config
-    @Bean
-    public TopicExchange outputExchange() {
-        return new TopicExchange(outputExchangeName, true, false);
     }
 
 }

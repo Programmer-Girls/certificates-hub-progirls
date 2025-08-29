@@ -1,92 +1,100 @@
 <h1 align="center">Certificates Hub: Generator</h1>
 
-<p align="center"><em>Messaging microservice for asynchronous certificate generation and PDF creation</em></p>
+<p align="center"><em>Microsserviço responsável pela geração assíncrona de certificados e criação de PDFs</em></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-In%20Testing-9b59b6?style=flat">
+  <img src="https://img.shields.io/badge/Status-Em%20Testes-9b59b6?style=flat">
   <img src="https://img.shields.io/badge/Java-17-9b59b6?style=flat&logo=java&logoColor=white">
   <img src="https://img.shields.io/badge/Spring%20Boot-3.x-9b59b6?style=flat&logo=spring-boot&logoColor=white">
-  <img src="https://img.shields.io/badge/RabbitMQ-Queue-9b59b6?style=flat&logo=rabbitmq&logoColor=white">
-  <img src="https://img.shields.io/badge/PDF%20Generation-OpenPDF-9b59b6?style=flat">
-  <img src="https://img.shields.io/badge/Template-HTML%2FThymeleaf-9b59b6?style=flat">
-  <img src="https://img.shields.io/badge/JUnit5-Test-9b59b6?style=flat&logo=junit5&logoColor=white">
+  <img src="https://img.shields.io/badge/PDF-Flying%20Saucer-9b59b6?style=flat">
+  <img src="https://img.shields.io/badge/Template-Thymeleaf-9b59b6?style=flat&logo=thymeleaf&logoColor=white">
+  <img src="https://img.shields.io/badge/JUnit5-Testes-9b59b6?style=flat&logo=junit5&logoColor=white">
   <img src="https://img.shields.io/badge/Maven-Build-9b59b6?style=flat&logo=apache-maven&logoColor=white">
 </p>
 
 ---
 
-## Table of Contents
+## Sumário
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [Testing](#testing)
-
----
-
-## Overview
-
-This microservice is responsible for:
-
-1. Creating and consuming a RabbitMQ queue where **MessageDTOs** are published by the **certificates-hub-upload** (MS1).
-2. Reading participant data (name, email, and certificate link) from the queue.
-3. Generating a PDF certificate for each participant and saving it locally.
-4. Sending the access link of the generated PDF to be published in another RabbitMQ queue for the **certificates-hub-sender** (MS3).
-
-> ⚠️ This microservice does **not** expose any REST endpoints. It only works asynchronously with RabbitMQ messaging.
+* [Visão Geral](#visão-geral)
+* [Primeiros Passos](#primeiros-passos)
+  * [Pré-requisitos](#pré-requisitos)
+  * [Instalação](#instalação)
+  * [Uso](#uso)
+  * [Testes](#testes)
+* [Exemplo de fluxo](#exemplo-de-fluxo)
 
 ---
 
-## Getting Started
+## Visão Geral
 
-### Prerequisites
+Este microsserviço é responsável por:
 
-This project requires the following dependencies:
+1. Consumir uma fila RabbitMQ onde o **certificates-hub-upload** (MS1) publica os **ParticipantDTO** com dados dos participantes.
+2. Ler os dados do participante (nome e email).
+3. Gerar o **PDF do certificado** com **Thymeleaf + Flying Saucer** e salvar localmente.
+4. Realizar uma **requisição POST** para o microsserviço **certificates-hub-sender** (MS3), enviando os dados do participante e anexando o certificado gerado.
 
-- **Programming Language:** Java 17
-- **Build Tool:** Maven
-- **Queue Broker:** RabbitMQ
-- **PDF Generation Library:** OpenPDF (or similar)
+> ⚠️ Este microsserviço **não expõe endpoints REST**. Ele atua de forma assíncrona consumindo mensagens do RabbitMQ e utiliza `RestTemplate` para comunicação com o MS3.
 
 ---
 
-### Installation
+## Primeiros Passos
 
-Build `certificates-hub-generator` from the source and install dependencies:
+### Pré-requisitos
 
-Clone the repository:
+Este projeto requer as seguintes dependências:
+
+* **Java 17**
+* **Maven**
+* **RabbitMQ**
+* **Thymeleaf** para renderização de templates HTML
+* **Flying Saucer (v9.12.0)** para geração de PDFs
+
+---
+
+### Instalação
+
+Clone o repositório:
 
 ```bash
 ❯ git clone https://github.com/nataliatsi/certificates-hub
-````
+```
 
-Navigate to the project directory:
+Acesse a pasta do projeto:
 
 ```bash
 ❯ cd certificates-generator
 ```
 
-Install the dependencies:
+Instale as dependências:
 
 ```bash
 ❯ ./mvnw clean install
 ```
 
-### Usage
+---
 
-Run the project with:
+### Uso
+
+Execute o projeto com:
 
 ```bash
 ❯ ./mvnw spring-boot:run
 ```
 
-The service will automatically create and consume its queue, generating PDF certificates locally and publishing access links to the next queue.
+O serviço irá:
 
-### Testing
+* Consumir os participantes da fila configurada no RabbitMQ.
+* Gerar os certificados em PDF localmente.
+* Chamar via **`RestTemplate`** o endpoint do **MS3 (Sender)** para disparar o email.
 
-certificates-hub-generator uses the JUnit 5 test framework. Run the test suite with:
+---
+
+### Testes
+
+O `certificates-hub-generator` utiliza **JUnit 5**.
+Rode a suíte de testes com:
 
 ```bash
 ❯ ./mvnw test
@@ -94,13 +102,24 @@ certificates-hub-generator uses the JUnit 5 test framework. Run the test suite w
 
 ---
 
-#### Example MessageDTO (from RabbitMQ)
+## Exemplo de fluxo
+
+### Mensagem recebida do RabbitMQ (entrada MS2):
 
 ```json
 {
   "participantName": "Tanjiro Kamado",
-  "participantEmail": "tanjiro.kamado@demoncorp.org",
-  "certificateLink": "certificates/Tanjiro_Kamado_certificate.pdf"
+  "participantEmail": "tanjiro.kamado@demoncorp.org"
+}
+```
+
+### Requisição enviada pelo MS2 para o MS3 (`POST /api/v1/certificates/send`):
+
+```json
+{
+  "name": "Tanjiro Kamado",
+  "email": "tanjiro.kamado@demoncorp.org",
+  "certificate": "certificates/Tanjiro_Kamado_certificate.pdf"
 }
 ```
 
@@ -108,6 +127,6 @@ certificates-hub-generator uses the JUnit 5 test framework. Run the test suite w
 
 <div align="center">
 
-[↑ **Back to top**](#certificates-hub-generator)
+[↑ **Voltar ao topo** 🟪](#-certificates-hub-generator)
 
 </div>

@@ -1,97 +1,147 @@
 <h1 align="center">Certificates Hub: Sender</h1>
 
-<p align="center"><em>Messaging microservice for asynchronous certificate delivery via email</em></p>
+<p align="center"><em>Microsserviço responsável pelo envio assíncrono de certificados via email</em></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-In%20Testing-4CAF50?style=flat">
-  <img src="https://img.shields.io/badge/Java-17-4CAF50?style=flat&logo=java&logoColor=white">
-  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-4CAF50?style=flat&logo=spring-boot&logoColor=white">
-  <img src="https://img.shields.io/badge/RabbitMQ-Queue-4CAF50?style=flat&logo=rabbitmq&logoColor=white">
-  <img src="https://img.shields.io/badge/REST%20API-Design-4CAF50?style=flat&logo=OpenAPI-Initiative&logoColor=white">
-  <img src="https://img.shields.io/badge/JUnit5-Test-4CAF50?style=flat&logo=junit5&logoColor=white">
-  <img src="https://img.shields.io/badge/Maven-Build-4CAF50?style=flat&logo=apache-maven&logoColor=white">
+  <img src="https://img.shields.io/badge/Status-Em%20Testes-9b59b6?style=flat">
+  <img src="https://img.shields.io/badge/Java-17-9b59b6?style=flat&logo=java&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-9b59b6?style=flat&logo=spring-boot&logoColor=white">
+  <img src="https://img.shields.io/badge/REST%20API-9b59b6?style=flat&logo=OpenAPI-Initiative&logoColor=white">
+  <img src="https://img.shields.io/badge/JUnit5-Testes-9b59b6?style=flat&logo=junit5&logoColor=white">
+  <img src="https://img.shields.io/badge/Maven-Build-9b59b6?style=flat&logo=apache-maven&logoColor=white">
 </p>
 
 ---
 
-## Table of Contents
+## Sumário
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [Testing](#testing)
-
----
-
-## Overview
-
-This microservice is responsible for:
-
-1. Consuming a RabbitMQ queue containing **MessageDTOs** with participant email and certificate link.
-2. Mapping the DTO data to the internal email service format.
-3. Sending the certificate link via email to each participant asynchronously.
-
-It is one of the microservices in the **Certificate Hub** ecosystem.
+* [Visão Geral](#visão-geral)
+* [Configuração SMTP](#configuração-smtp)
+* [Primeiros Passos](#primeiros-passos)
+  * [Pré-requisitos](#pré-requisitos)
+  * [Instalação](#instalação)
+  * [Uso](#uso)
+  * [Testes](#testes)
+* [Exemplo de Requisição](#exemplo-de-requisição)
 
 ---
 
-## Getting Started
+## Visão Geral
 
-### Prerequisites
+Este microsserviço é responsável por:
 
-This project requires the following dependencies:
+1. Expor um **endpoint RESTful** para recebimento dos dados de envio de certificado: **nome, email e certificado**.
+2. Enviar o certificado por email de forma assíncrona para cada participante.
 
-- **Programming Language:** Java 17
-- **Build Tool:** Maven
-- **Queue Broker:** RabbitMQ
-- **Email Service:** SMTP or any supported email provider
+Faz parte do ecossistema **Certificates Hub**.
 
-> ⚠️ Before running the service, make sure to configure your SMTP server by setting the following variables in `application.properties` or environment variables:
+---
+
+## Configuração SMTP
+
+Este serviço utiliza **SMTP** para envio de emails.
+A seguir estão as configurações recomendadas para uso em **produção (Gmail)** e **ambiente de testes (Mailtrap)**.
+
+---
+
+### Produção - Gmail
+
+* Servidor SMTP: `smtp.gmail.com`
+* Porta: `587`
+* Usuário: `seu-email@gmail.com`
+* Senha: senha do aplicativo gerada no Gmail (**não use sua senha da conta diretamente**)
+
+> **Importante:**
 >
-> ```properties
-> spring.mail.host=your-smtp-host
-> spring.mail.port=587
-> spring.mail.username=your-username
-> spring.mail.password=your-password
-> ```
+> * Ative a **verificação em 2 etapas** na sua conta Google.
+> * Gere uma **senha de app** para o SMTP em: [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+> * A senha vem com espaços, ex.: `abcd efgh ijkl mnop`.
+> * **Remova os espaços** antes de colocar no `application.properties`, ficando assim:
+
+```properties
+spring.mail.password=abcdefghijklmnop
+```
 
 ---
 
-### Installation
+### Testes - Mailtrap
 
-Build `certificates-hub-sender` from the source and install dependencies:
+* Servidor SMTP: `sandbox.smtp.mailtrap.io`
+* Porta: `2525`
+* Usuário e senha: fornecidos pelo Mailtrap na sua conta.
+* Acesse: [https://mailtrap.io/home](https://mailtrap.io/home)
 
-Clone the repository:
+#### Exemplo `application-test.properties`
+
+```properties
+spring.mail.host=sandbox.smtp.mailtrap.io
+spring.mail.port=2525
+spring.mail.username=${SMTP_TEST_USERNAME}
+spring.mail.password=${SMTP_TEST_PASSWORD}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+```
+
+---
+
+### Produção - Exemplo `application.properties`
+
+```properties
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=${SMTP_PROD_USERNAME}
+spring.mail.password=${SMTP_PROD_PASSWORD}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+```
+
+---
+
+## Primeiros Passos
+
+### Pré-requisitos
+
+* **Java 17**
+* **Maven**
+* Conta configurada em servidor **SMTP** (Gmail para produção ou Mailtrap para testes)
+
+---
+
+### Instalação
+
+Clone o repositório:
 
 ```bash
 ❯ git clone https://github.com/nataliatsi/certificates-hub
-````
+```
 
-Navigate to the project directory:
+Acesse a pasta do projeto:
 
 ```bash
 ❯ cd certificates-sender
 ```
 
-Install the dependencies:
+Instale as dependências:
 
 ```bash
 ❯ ./mvnw clean install
 ```
 
-### Usage
+---
 
-Run the project with:
+### Uso
+
+Inicie o microsserviço:
 
 ```bash
 ❯ ./mvnw spring-boot:run
 ```
 
-### Testing
+---
 
-certificates-hub-sender uses the JUnit 5 test framework. Run the test suite with:
+### Testes
+
+Rodar os testes com **JUnit 5**:
 
 ```bash
 ❯ ./mvnw test
@@ -99,13 +149,22 @@ certificates-hub-sender uses the JUnit 5 test framework. Run the test suite with
 
 ---
 
-#### Example MessageDTO (from RabbitMQ)
+## Exemplo de Requisição
+
+Endpoint:
+
+```http
+POST /api/v1/certificates/send-email
+Content-Type: application/json
+```
+
+Body:
 
 ```json
 {
-  "participantName": "Tanjiro Kamado",
-  "participantEmail": "tanjiro.kamado@demoncorp.org",
-  "certificateLink": "certificates/Tanjiro_Kamado_certificate.pdf"
+  "name": "Tanjiro Kamado",
+  "email": "tanjiro.kamado@demoncorp.org",
+  "certificate": "certificates/Tanjiro_Kamado_certificate.pdf"
 }
 ```
 
@@ -113,6 +172,7 @@ certificates-hub-sender uses the JUnit 5 test framework. Run the test suite with
 
 <div align="center">
 
-[↑ **Back to top**](#certificates-hub-sender)
+[↑ **Voltar ao topo** 🟪](#-certificates-hub-sender)
 
 </div>
+

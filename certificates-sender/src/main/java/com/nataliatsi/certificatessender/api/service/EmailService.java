@@ -1,14 +1,15 @@
 package com.nataliatsi.certificatessender.api.service;
 
-import com.nataliatsi.certificatessender.api.dto.MessageDTO;
-import com.nataliatsi.certificatessender.api.util.ValidityDateHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
+import java.util.Objects;
 
 @Service
 public class EmailService {
@@ -21,24 +22,25 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendCertificate(MessageDTO messageDTO) {
+    public void sendCertificate(String name, String email, MultipartFile certificate) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
             Context context = new Context();
-            context.setVariable("name", messageDTO.participantName());
-            context.setVariable("certificateLink", messageDTO.certificateLink());
-            context.setVariable("validityDate", ValidityDateHelper.calculateValidity(5));
+            context.setVariable("name", name);
+
             String html = templateEngine.process("certificate-email", context);
 
-            helper.setTo(messageDTO.participantEmail());
-            helper.setSubject("Your certificate is ready!");
+            helper.setTo(email);
+            helper.setSubject("Seu certificado da Tech Week está pronto!");
             helper.setText(html, true);
-            helper.setFrom("no-reply@certificates.com");
+
+            if (certificate != null && !certificate.isEmpty()) {
+                helper.addAttachment(Objects.requireNonNull(certificate.getOriginalFilename()), certificate);
+            }
 
             mailSender.send(mimeMessage);
-            System.out.println("Email successfully sent to " + messageDTO.participantEmail());
 
         } catch (MessagingException e) {
             System.out.println("Error while sending certificate: " + e.getMessage());
