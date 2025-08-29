@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <h1 align="center">Certificates Hub: ProGirls 👩🏻‍💻💜</h1>
 
 <p align="center"><em>Ecossistema de microsserviços para automação da geração e envio de certificados</em></p>
@@ -138,3 +139,7 @@ Made with 💜 by [**Natália**](https://github.com/nataliatsi)
 [↑ **Voltar ao topo** ↑](#certificates-hub-progirls)
 
 </div>
+=======
+# certificates-hub-progirls
+Sistema para geração automática e envio de certificados de eventos da comunidade ProGirls.
+>>>>>>> origin/main
