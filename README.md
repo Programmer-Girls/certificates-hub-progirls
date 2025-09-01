@@ -54,13 +54,33 @@ O sistema é formado por **3 microsserviços RESTful**, todos em **Spring Boot**
     - Salva localmente e envia (`name`, `email`, `certificate`) via **POST** para o MS3.
 
 3. **Certificates Sender (MS3)**
-    - Endpoint: `POST /api/certificates/sender`
+    - Endpoint: `POST /api/v1/certificates/send-email`
     - Recebe os certificados gerados e dispara o envio por e-mail para cada participante.
 
 Fluxo resumido:
 
-```text
-Upload de Participantes (MS1) → RabbitMQ → Geração de Certificados (MS2) → Envio por E-mail (MS3)
+```mermaid
+sequenceDiagram
+    participant User as Usuário
+    participant MS1 as MS1: Data Upload
+    participant Queue1 as RabbitMQ - Fila de Participantes
+    participant MS2 as MS2: Certificate Generator
+    participant MS3 as MS3: Certificate Sender
+    participant Email as Servidor de Email
+
+    User->>MS1: POST /api/uploads/participants (arquivo CSV/Excel)
+    MS1->>MS1: Escolher estratégia baseada no tipo de arquivo
+    MS1->>MS1: Mapear dados para DTOs
+    MS1->>Queue1: Publicar mensagem (ParticipantDTO)
+
+    Queue1-->>MS2: Consumir mensagem (ParticipantDTO)
+    MS2->>MS2: Preencher template HTML (Thymeleaf)
+    MS2->>MS2: Gerar PDF a partir do template
+    MS2->>MS3: POST /api/v1/certificates/send-email (PDF anexado)
+
+    MS3->>Email: Enviar certificado por e-mail
+    Email-->>User: Certificado entregue na caixa de entrada
+
 ````
 
 ---
